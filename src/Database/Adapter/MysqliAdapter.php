@@ -1,9 +1,10 @@
 <?php
 namespace Craft\Database\Adapter;
 
-use Craft\Database\Interface\AdapterInterface;
+use Craft\Database\Interfaces\AdapterInterface;
 
-class MysqliAdapter implements AdapterInterface{
+class MysqliAdapter implements AdapterInterface
+{
 	protected $conn;
 
 	public function connect(array $config)
@@ -12,7 +13,7 @@ class MysqliAdapter implements AdapterInterface{
 			$config['host'] ?? 'localhost',
 			$config['user'] ?? 'root',
 			$config['password'] ?? '',
-			$config['database'] ?? '',
+			$config['database'] ?? 'manga_reader',
 			$config['port'] ?? 3306
 		);
 		if ($this->conn->connect_error) {
@@ -29,18 +30,60 @@ class MysqliAdapter implements AdapterInterface{
 
 	public function query($sql, $params = [])
 	{
-		// Đơn giản hóa, chưa bind param
-		return $this->conn->query($sql);
+		if (empty($params)) {
+			$result = $this->conn->query($sql);
+			if ($result === false) {
+				throw new \Exception('MySQLi query error: ' . $this->conn->error . ' | SQL: ' . $sql);
+			}
+			return $result;
+		}
+
+		$stmt = $this->conn->prepare($sql);
+		if ($stmt === false) {
+			throw new \Exception('MySQLi prepare error: ' . $this->conn->error . ' | SQL: ' . $sql);
+		}
+
+		// Suy luận kiểu tham số đơn giản (i,d,s,b)
+		$types = '';
+		$values = [];
+		foreach ($params as $param) {
+			if (is_int($param)) {
+				$types .= 'i';
+			} else if (is_float($param)) {
+				$types .= 'd';
+			} else if (is_null($param)) {
+				$types .= 's';
+				$param = null;
+			} else {
+				$types .= 's';
+			}
+			$values[] = $param;
+		}
+
+		// bind_param yêu cầu tham chiếu
+		$stmt->bind_param($types, ...$values);
+		if (!$stmt->execute()) {
+			$error = $stmt->error ?: $this->conn->error;
+			throw new \Exception('MySQLi execute error: ' . $error . ' | SQL: ' . $sql);
+		}
+
+		$result = $stmt->get_result();
+		// Với các lệnh không trả result set (INSERT/UPDATE/DELETE), trả về true
+		return $result ?: true;
 	}
 
 	public function fetch($result, $type = 'assoc')
 	{
 		switch ($type) {
-			case 'num': return $result->fetch_array(MYSQLI_NUM);
-			case 'both': return $result->fetch_array(MYSQLI_BOTH);
-			case 'object': return $result->fetch_object();
+			case 'num':
+				return $result->fetch_array(MYSQLI_NUM);
+			case 'both':
+				return $result->fetch_array(MYSQLI_BOTH);
+			case 'object':
+				return $result->fetch_object();
 			case 'assoc':
-			default: return $result->fetch_assoc();
+			default:
+				return $result->fetch_assoc();
 		}
 	}
 

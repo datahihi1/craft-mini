@@ -1,7 +1,7 @@
 <?php
 namespace Craft\Drive\View;
 
-use Craft\Interface\ViewEngine;
+use Craft\Interfaces\ViewEngine;
 
 class BladeOneDrive implements ViewEngine
 {

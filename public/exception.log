@@ -1,3 +1,0 @@
-2025-09-09 14:42:59 | Exception: No .env file found in any root directory: [C:\laragon\www\CraftMini\] with files [.env] | File: C:\laragon\www\CraftMini\vendor\datahihi1\tiny-env\src\TinyEnv.php | Line: 92
-2025-09-09 14:43:00 | Exception: No .env file found in any root directory: [C:\laragon\www\CraftMini\] with files [.env] | File: C:\laragon\www\CraftMini\vendor\datahihi1\tiny-env\src\TinyEnv.php | Line: 92
-2025-09-09 14:44:10 | Exception: No .env file found in any root directory: [C:\laragon\www\CraftMini\] with files [.env, .env.local] | File: C:\laragon\www\CraftMini\vendor\datahihi1\tiny-env\src\TinyEnv.php | Line: 92

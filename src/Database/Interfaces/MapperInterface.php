@@ -1,5 +1,5 @@
 <?php
-namespace Craft\Database\Interface;
+namespace Craft\Database\Interfaces;
 
 interface MapperInterface {
     public function find($id);

@@ -4,7 +4,8 @@ namespace Craft\Application;
 /**
  * Session management class
  *
- * This class provides methods to start, get, set, and destroy session variables.
+ * This class provides methods to start, get, set, flash and destroy session variables.
+ *
  * It is used to manage user sessions in the application.
  */
 class Session
@@ -46,13 +47,30 @@ class Session
     /**
      * Flash a session variable
      *
-     * @param string $key
-     * @param mixed $value
+     * @param string $key The session flash key.
+     * @param mixed $value The session flash value.
      */
-    public static function flash($key, $value)
+    public static function flash(string $key, $value)
     {
         self::start();
         $_SESSION['_flash'][$key] = $value;
+    }
+
+    /**
+     * Get and remove a flash session variable
+     *
+     * @param string $key The session flash key.
+     * @return mixed
+     */
+    public static function getFlash($key)
+    {
+        self::start();
+        if (isset($_SESSION['_flash'][$key])) {
+            $value = $_SESSION['_flash'][$key];
+            unset($_SESSION['_flash'][$key]); // xoá sau khi đọc
+            return $value;
+        }
+        return null;
     }
 
     /**

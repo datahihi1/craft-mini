@@ -1,7 +1,7 @@
 <?php
 namespace Craft\Database\Mapper;
 
-use Craft\Database\Interface\MapperInterface;
+use Craft\Database\Interfaces\MapperInterface;
 
 abstract class BaseMapper implements MapperInterface {
     protected $adapter;

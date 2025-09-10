@@ -1,5 +1,5 @@
 <?php
-namespace Craft\Database\Interface;
+namespace Craft\Database\Interfaces;
 
 interface AdapterInterface{
     public function connect(array $config);

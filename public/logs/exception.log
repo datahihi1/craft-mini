@@ -1,3 +1,38 @@
 2025-09-09 14:34:40 | Exception: No .env file found in any root directory: [C:\laragon\www\CraftMini\] with files [.env] | File: C:\laragon\www\CraftMini\vendor\datahihi1\tiny-env\src\TinyEnv.php | Line: 92
 2025-09-09 14:36:41 | Exception: Application initialization failed: No .env file found in any root directory: [C:\laragon\www\CraftMini\] with files [.env] | File: C:\laragon\www\CraftMini\src\Application\App.php | Line: 412
 2025-09-09 14:42:26 | Exception: No .env file found in any root directory: [C:\laragon\www\CraftMini\] with files [.env] | File: C:\laragon\www\CraftMini\vendor\datahihi1\tiny-env\src\TinyEnv.php | Line: 92
+2025-09-10 11:58:01 | Exception: syntax error, unexpected 'Interface' (T_INTERFACE), expecting identifier (T_STRING) or '{' | File: C:\laragon\www\CraftMini\src\Database\Adapter\PdoMysqlAdapter.php | Line: 4
+2025-09-10 11:58:41 | Exception: syntax error, unexpected 'Interface' (T_INTERFACE), expecting identifier (T_STRING) or '{' | File: C:\laragon\www\CraftMini\src\Database\Adapter\PdoMysqlAdapter.php | Line: 4
+2025-09-10 11:59:32 | Exception: syntax error, unexpected 'Interface' (T_INTERFACE), expecting identifier (T_STRING) or '{' | File: C:\laragon\www\CraftMini\src\Database\Adapter\PdoMysqlAdapter.php | Line: 4
+2025-09-10 12:05:26 | Exception: Call to a member function fetch_assoc() on boolean | File: C:\laragon\www\CraftMini\src\Database\Adapter\MysqliAdapter.php | Line: 43
+2025-09-10 12:44:19 | Exception: syntax error, unexpected '=>' (T_DOUBLE_ARROW), expecting ',' or ')' | File: C:\laragon\www\CraftMini\src\Database\QueryBuilder\MysqlBuilder.php | Line: 22
+2025-09-10 12:45:52 | Exception: Call to undefined method Craft\Database\QueryBuilder\MysqlBuilder::fetchAll() | File: C:\laragon\www\CraftMini\app\Controller\HomeController.php | Line: 23
+2025-09-10 12:46:36 | Exception: Call to undefined method Craft\Database\QueryBuilder\MysqlBuilder::fetchAll() | File: C:\laragon\www\CraftMini\app\Controller\HomeController.php | Line: 23
+2025-09-10 12:46:37 | Exception: Call to undefined method Craft\Database\QueryBuilder\MysqlBuilder::fetchAll() | File: C:\laragon\www\CraftMini\app\Controller\HomeController.php | Line: 23
+2025-09-10 12:50:08 | Exception: Call to a member function fetch_assoc() on boolean | File: C:\laragon\www\CraftMini\src\Database\Adapter\MysqliAdapter.php | Line: 43
+2025-09-10 12:50:09 | Exception: Call to a member function fetch_assoc() on boolean | File: C:\laragon\www\CraftMini\src\Database\Adapter\MysqliAdapter.php | Line: 43
+2025-09-10 12:55:32 | Exception: Call to undefined method App\Controller\HomeController::getBuilder() | File: C:\laragon\www\CraftMini\app\Controller\HomeController.php | Line: 30
+2025-09-10 12:56:02 | Exception: Too few arguments to function App\Model\Model::getBuilder(), 0 passed in C:\laragon\www\CraftMini\app\Controller\HomeController.php on line 30 and exactly 1 expected | File: C:\laragon\www\CraftMini\app\Model\Model.php | Line: 27
+2025-09-10 12:56:03 | Exception: Too few arguments to function App\Model\Model::getBuilder(), 0 passed in C:\laragon\www\CraftMini\app\Controller\HomeController.php on line 30 and exactly 1 expected | File: C:\laragon\www\CraftMini\app\Model\Model.php | Line: 27
+2025-09-10 16:29:21 | Exception: Call to a member function fetch_assoc() on string | File: C:\laragon\www\CraftMini\src\Database\Adapter\MysqliAdapter.php | Line: 51
+2025-09-10 16:29:23 | Exception: Call to a member function fetch_assoc() on string | File: C:\laragon\www\CraftMini\src\Database\Adapter\MysqliAdapter.php | Line: 51
+2025-09-10 20:23:55 | Exception: Class name must be a valid object or a string | File: C:\laragon\www\CraftMini\src\Database\DatabaseManager.php | Line: 90
+2025-09-10 20:24:18 | Exception: Class name must be a valid object or a string | File: C:\laragon\www\CraftMini\src\Database\DatabaseManager.php | Line: 90
+2025-09-10 20:24:19 | Exception: Class name must be a valid object or a string | File: C:\laragon\www\CraftMini\src\Database\DatabaseManager.php | Line: 90
+2025-09-10 20:29:44 | Exception: Class name must be a valid object or a string | File: C:\laragon\www\CraftMini\src\Database\DatabaseManager.php | Line: 90
+2025-09-10 20:31:39 | Exception: Class name must be a valid object or a string | File: C:\laragon\www\CraftMini\src\Database\DatabaseManager.php | Line: 90
+2025-09-10 20:31:39 | Exception: Class name must be a valid object or a string | File: C:\laragon\www\CraftMini\src\Database\DatabaseManager.php | Line: 90
+2025-09-10 20:31:43 | Exception: Class name must be a valid object or a string | File: C:\laragon\www\CraftMini\src\Database\DatabaseManager.php | Line: 90
+2025-09-10 20:31:45 | Exception: Class name must be a valid object or a string | File: C:\laragon\www\CraftMini\src\Database\DatabaseManager.php | Line: 90
+2025-09-10 20:33:44 | Exception: Call to undefined method Craft\Database\QueryBuilder\MysqlBuilder::query() | File: C:\laragon\www\CraftMini\app\Controller\HomeController.php | Line: 30
+2025-09-10 20:34:01 | Exception: Call to undefined method Craft\Database\QueryBuilder\MysqlBuilder::fetchAll() | File: C:\laragon\www\CraftMini\app\Controller\HomeController.php | Line: 30
+2025-09-10 20:34:02 | Exception: Call to undefined method Craft\Database\QueryBuilder\MysqlBuilder::fetchAll() | File: C:\laragon\www\CraftMini\app\Controller\HomeController.php | Line: 30
+2025-09-10 20:54:26 | Exception: Call to a member function fetch_assoc() on boolean | File: C:\laragon\www\CraftMini\src\Database\Adapter\MysqliAdapter.php | Line: 51
+2025-09-10 20:54:35 | Exception: Call to a member function fetch_assoc() on boolean | File: C:\laragon\www\CraftMini\src\Database\Adapter\MysqliAdapter.php | Line: 51
+2025-09-10 20:54:52 | Exception: Call to a member function fetch_assoc() on boolean | File: C:\laragon\www\CraftMini\src\Database\Adapter\MysqliAdapter.php | Line: 53
+2025-09-10 20:54:53 | Exception: Call to a member function fetch_assoc() on boolean | File: C:\laragon\www\CraftMini\src\Database\Adapter\MysqliAdapter.php | Line: 53
+2025-09-10 20:54:53 | Exception: Call to a member function fetch_assoc() on boolean | File: C:\laragon\www\CraftMini\src\Database\Adapter\MysqliAdapter.php | Line: 53
+2025-09-10 20:58:31 | Exception: Call to undefined method App\Model\Users::all() | File: C:\laragon\www\CraftMini\app\Controller\HomeController.php | Line: 30
+2025-09-10 20:58:32 | Exception: Call to undefined method App\Model\Users::all() | File: C:\laragon\www\CraftMini\app\Controller\HomeController.php | Line: 30
+2025-09-10 21:54:50 | Exception: Class name must be a valid object or a string | File: C:\laragon\www\CraftMini\src\Database\DatabaseManager.php | Line: 94
+2025-09-10 21:55:26 | Exception: Class name must be a valid object or a string | File: C:\laragon\www\CraftMini\src\Database\DatabaseManager.php | Line: 94

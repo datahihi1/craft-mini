@@ -9,7 +9,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['_method'])) {
 
 $router->get('/', [App\Controller\HomeController::class, 'index']);
 
-$router->get('/welcome', [HomeController::class, 'welcome']);
+$router->get('/test', [HomeController::class, 'test']);
+
+// API routes for Users CRUD (query builder)
+Craft\Application\Router::apiGet('/users', [HomeController::class, 'usersIndex']);
+Craft\Application\Router::apiPost('/users', [HomeController::class, 'usersStore']);
+Craft\Application\Router::apiPut('/users/{id}', [HomeController::class, 'usersUpdate']);
+Craft\Application\Router::apiDelete('/users/{id}', [HomeController::class, 'usersDestroy']);
 
 try {
     $router->runInstance();

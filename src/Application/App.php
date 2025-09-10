@@ -284,8 +284,10 @@ class App
      */
     private static function loadEnvironmentVariables()
     {
+        if (!class_exists(\Datahihi1\TinyEnv\TinyEnv::class)) {
+            throw new Exception('TinyEnv is not installed. Please run "composer require datahihi1/tiny-env"');
+        }
         $env = new \Datahihi1\TinyEnv\TinyEnv(ROOT_DIR);
-        $env->envfiles(['.env', '.env.local']);
         $env->load();
     }
 

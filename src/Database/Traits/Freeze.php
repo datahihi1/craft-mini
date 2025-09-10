@@ -1,5 +1,5 @@
 <?php
-namespace Craft\Database\Helper;
+namespace Craft\Database\Traits;
 
 /**
  * Freeze trait

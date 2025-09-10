@@ -1,5 +1,5 @@
 <?php
-namespace Craft\Database\Interface;
+namespace Craft\Database\Interfaces;
 
 interface BuilderInterface {
     public function table(string $table): self;

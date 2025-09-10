@@ -1,5 +1,5 @@
 <?php
-namespace Craft\Interface;
+namespace Craft\Interfaces;
 
 /**
  * ViewEngine interface for rendering templates.

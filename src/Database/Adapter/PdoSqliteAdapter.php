@@ -1,7 +1,7 @@
 <?php
 namespace Craft\Database\Adapter;
 
-use Craft\Database\Interface\AdapterInterface;
+use Craft\Database\Interfaces\AdapterInterface;
 
 class PdoSqliteAdapter implements AdapterInterface{
 	protected $pdo;
