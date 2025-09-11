@@ -2,11 +2,16 @@
 namespace Craft\Database\Adapter;
 
 use Craft\Database\Interfaces\AdapterInterface;
-
+/**
+ * #### MySQLi Database Adapter using MySQLi extension
+ */
 class MysqliAdapter implements AdapterInterface
 {
 	protected $conn;
 
+	/**
+	 * Get connection
+	 */
 	public function connect(array $config)
 	{
 		$this->conn = new \mysqli(

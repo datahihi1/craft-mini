@@ -2,7 +2,7 @@
 namespace Craft\Database\Traits;
 
 /**
- * Freeze trait
+ * #### Freeze trait
  * 
  * This trait provides functionality to mark an object as frozen,
  * preventing further modifications to its state.

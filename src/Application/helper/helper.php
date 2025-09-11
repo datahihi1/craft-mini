@@ -1,8 +1,8 @@
-
 <?php
 
 use Craft\Application\Session;
 
+#region Old Input Helper
 if (!function_exists('old')) {
     /**
      * Get old input value from the previous request.
@@ -21,7 +21,9 @@ if (!function_exists('old')) {
         return $default;
     }
 }
+#endregion
 
+#region Source Helper
 if (!function_exists('source')) {
     /**
      * Get the URL for a source file (located in public/source).
@@ -51,7 +53,9 @@ if (!function_exists('source')) {
         return $baseUrl . 'source/' . $path;
     }
 }
+#endregion
 
+#region Router Helpers
 if (!function_exists('redirect')) {
     /**
      * Redirect helper: 
@@ -60,7 +64,7 @@ if (!function_exists('redirect')) {
      * @param string|null $url URL to redirect to.
      * @return object|void
      */
-    function redirect(string $url = null) {
+    function redirect(?string $url = null) {
         if ($url !== null) {
             header('Location: ' . $url);
             exit;
@@ -98,7 +102,9 @@ if (!function_exists('route')) {
         return \Craft\Application\Router::route($name, $params);
     }
 }
+#endregion
 
+#region Session Helpers
 if (!function_exists('session')) {
     /**
      * Helper function for session get/set.
@@ -110,7 +116,7 @@ if (!function_exists('session')) {
      * @param mixed|null $value The session value.
      * @return mixed|null
      */
-    function session(string $key = null, $value = null)
+    function session(?string $key = null, $value = null)
     {
 
         if (is_null($key) && is_null($value)) {
@@ -130,6 +136,26 @@ if (!function_exists('session')) {
     }
 }
 
+if (!function_exists("flash")){
+    function flash($key = null, $value = null){
+        Session::flash($key, $value);
+    }
+}
+
+if (!function_exists('getFlash')) {
+    /**
+     * Get flash data from session.
+     * @param string $key
+     * @return mixed|null
+     */
+    function getFlash(string $key)
+    {
+        return Session::getFlash($key);
+    }
+}
+#endregion
+
+#region Base URL Helper
 if (!function_exists('getBaseUrl')) {
     /**
      * Get the base URL of the application.
@@ -145,9 +171,4 @@ if (!function_exists('getBaseUrl')) {
         return $scheme . "://" . $host . $basePath;
     }
 }
-
-if (!function_exists("flash")){
-    function flash($key = null, $value = null){
-        Session::flash($key, $value);
-    }
-}
+#endregion

@@ -11,12 +11,13 @@ use Craft\Database\QueryBuilder\MysqlBuilder;
 use Craft\Database\QueryBuilder\SqliteBuilder;
 
 /**
- * DatabaseManager class
+ * #### DatabaseManager class
  * 
  * Manages database connections and mappers/builders based on configuration.
  */
 class DatabaseManager
 {
+    /** Adapter instance */
     protected $adapter;
     protected $mapper;
     protected $builder;
@@ -65,24 +66,24 @@ class DatabaseManager
     /**
      * Get database configuration based on driver
      * @param mixed $driver
-     * @return array
+     * 
      */
     protected function getConfig($driver)
     {
         if (strpos($driver, 'sqlite') !== false) {
             return [
-                // Thống nhất key 'database' cho các adapter PDO Sqlite/Sqlite3
-                'database' => env('DB_SQLITE_FILE'),
+                'database' => env('DB_SQLITE_FILE') . '.db',
             ];
         }
-        return [
-            'host' => env('DB_HOST'),
-            'port' => env('DB_PORT'),
-            'user' => env('DB_USER'),
-            // Thống nhất key 'password' thay vì 'pass'
-            'password' => env('DB_PASS') ?? null,
-            'database' => env('DB_NAME'),
-        ];
+        else if (strpos($driver, 'mysql') !== false) {
+            return [
+                'host'     => env('DB_HOST'),
+                'port'     => env('DB_PORT'),
+                'user'     => env('DB_USER'),
+                'password' => env('DB_PASS') ?? null,
+                'database' => env('DB_NAME'),
+            ];
+        }
     }
 
     public function getAdapter()
@@ -90,10 +91,17 @@ class DatabaseManager
         return $this->adapter;
     }
 
+    /**
+     * Get a mapper instance for a specific table
+     * 
+     *  **Note:**
+     * - For 'mapper': the Mapper class receives ($adapter, $table)
+     * - For 'builder': the Builder also receives ($adapter, $table) and executes through the adapter
+     * @param mixed $table
+     * @return object
+     */
     public function getMapper($table)
     {
-        // Với 'mapper': lớp Mapper nhận ($adapter, $table)
-        // Với 'builder': Builder cũng sẽ nhận ($adapter, $table) và tự thực thi thông qua adapter
         return new $this->mapperClass($this->adapter, $table);
     }
 }

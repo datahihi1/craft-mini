@@ -2,7 +2,7 @@
 namespace Craft\Database\Traits;
 
 /**
- * Timestamp trait
+ * #### Timestamp trait
  * 
  * This trait provides functionality to manage created_at and updated_at timestamps for database models.
  */

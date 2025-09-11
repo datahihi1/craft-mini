@@ -49,7 +49,12 @@ if (!function_exists('dd')) {
                 $output .= craft_custom_var_dump($vars[$j]) . "\n";
             }
         }
-        echo '<pre style="background:#222;color:#eee;padding:5px 10px;border-radius:8px;overflow:auto;font-size:13px;line-height:1.2;box-shadow:0 2px 8px #0002;">' . htmlspecialchars($output) . '</pre>';
+        $isCli = (PHP_SAPI === 'cli' || PHP_SAPI === 'phpdbg');
+        if ($isCli) {
+            echo $output . PHP_EOL;
+        } else {
+            echo '<pre style="background:#222;color:#eee;padding:5px 10px;border-radius:8px;overflow:auto;font-size:13px;line-height:1.2;box-shadow:0 2px 8px #0002;">' . htmlspecialchars($output) . '</pre>';
+        }
         die();
     }
 }
@@ -104,7 +109,12 @@ if (!function_exists('dump')) {
                 $output .= craft_custom_var_dump($vars[$j]) . "\n";
             }
         }
-        echo '<pre style="background:#222;color:#eee;padding:5px 10px;border-radius:8px;overflow:auto;font-size:13px;line-height:1.2;box-shadow:0 2px 8px #0002;">' . htmlspecialchars($output) . '</pre>';
+        $isCli = (PHP_SAPI === 'cli' || PHP_SAPI === 'phpdbg');
+        if ($isCli) {
+            echo $output . PHP_EOL;
+        } else {
+            echo '<pre style="background:#222;color:#eee;padding:5px 10px;border-radius:8px;overflow:auto;font-size:13px;line-height:1.2;box-shadow:0 2px 8px #0002;">' . htmlspecialchars($output) . '</pre>';
+        }
     }
 }
 

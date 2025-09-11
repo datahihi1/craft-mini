@@ -8,21 +8,21 @@ use \Craft\Reports\CraftRuntime;
 use \Exception;
 
 /**
- * App Class is the core to boot and run the application.
+ * #### App Class is the core to boot and run the application.
  *
  * This class initializes and boot the application environment, sets up error handling,
  * loads environment variables, and configures reporting for errors, exceptions,
- * and runtime issues. It also handles CLI reporting if the application is run
+ * and runtime issues. It also handles reporting if the application is run
  * from the command line.
  */
 #region App
 class App
 {
     /**
-     * Version of Craft Framework.
+     * Version of Craft Framework (Mini edition).
      * @var string
      */
-    public const version = '0.1.20250907-mini+dev';
+    public const version = '0.1.20250911-mini+dev';
 
     /**
      * Application environment
@@ -203,11 +203,11 @@ class App
     /**
      * Initialize error reporting with validation
      *
-     * @param string $logDir
+     * @param string|null $logDir
      * @return void
      * @throws Exception
      */
-    private static function initializeErrorReporting(string $logDir = null)
+    private static function initializeErrorReporting(?string $logDir = null)
     {
         if (is_null($logDir)) {
             CraftParse::sign();
@@ -412,8 +412,8 @@ class App
             // Validate required environment variables for services
             self::validateServiceConfig();
 
-
-            self::validateDatabaseConfig();
+            // Validate database configuration (optional)
+            // self::validateDatabaseConfig();
         } catch (Exception $e) {
             if (self::isDebug()) {
                 self::initializeErrorReporting();

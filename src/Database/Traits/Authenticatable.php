@@ -2,7 +2,7 @@
 namespace Craft\Database\Traits;
 
 /**
- * Authenticatable trait
+ * #### Authenticatable trait
  * 
  * This trait provides functionality to mark an object as authenticatable,
  * allowing it to be used in authentication processes.

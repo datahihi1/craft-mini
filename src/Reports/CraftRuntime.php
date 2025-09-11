@@ -2,7 +2,7 @@
 namespace Craft\Reports;
 
 /**
- * RuntimeReporting class for handling fatal errors in web applications.
+ * #### RuntimeReporting class for handling fatal errors in web applications.
  *
  * This class captures fatal errors, logs them if configured, and renders a user-friendly error page.
  *

@@ -1,4 +1,9 @@
 <?php
+/**
+ * #### Class Source
+ * 
+ * A utility class for managing source files located in public/source.
+ */
 class Source {
     /**
      * Get the URL for a source file (located in public/source).
@@ -11,7 +16,7 @@ class Source {
      * @param string|null $extension The file extension
      * @return string
      */
-    public static function url($file = '', string $extension = null): string
+    public static function url($file = '', ?string $extension = null): string
     {
         // Support array or named arguments
         if (is_array($file)) {
@@ -81,7 +86,7 @@ class Source {
         
     // }
 
-    // public static function change($file1 = '', $file2 = '') {
+    // public static function change($fileChange = '', $fileReplace = '') {
 
     // }
 

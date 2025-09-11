@@ -2,7 +2,7 @@
 namespace Craft\Reports;
 
 /**
- * ExceptionReporting class for handling uncaught exceptions in PHP applications.
+ * #### ExceptionReporting class for handling uncaught exceptions in PHP applications.
  *
  * This class provides functionality to log exceptions and render a user-friendly error page.
  * It can be configured to save logs to a file and customize the log file name.

@@ -5,7 +5,7 @@ use Closure;
 use Exception;
 
 /**
- * Router Class to handle HTTP routing in the application.
+ * #### Router Class to handle HTTP routing in the application.
  *
  * This class handles the routing of HTTP requests to their respective handlers.
  * It supports standard routes and API routes, with middleware for both.
@@ -384,7 +384,7 @@ class Router
         }
         if ($matchedApiParamRoute) {
             http_response_code(400);
-            header('HTTP/1.1 404 Not Found');
+            // header('HTTP/1.1 404 Not Found');
             throw new Exception("400 Bad Request: Missing required parameter for API route $matchedApiParamRoute.");
         }
 
@@ -440,6 +440,8 @@ class Router
                 http_response_code(500);
                 throw new Exception("500 Internal Server Error: Method $method() not found in class $class");
             }
+            # On PHP 8.4+, ReflectionMethod with $classMethod has been deprecated
+            # But with $objectOrMethod and $method is still valid
             $ref = new \ReflectionMethod($instance, $method);
             $args = $params;
             if ($ref->getNumberOfParameters() > count($params)) {

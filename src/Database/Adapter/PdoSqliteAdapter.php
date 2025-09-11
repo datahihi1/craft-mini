@@ -3,11 +3,21 @@ namespace Craft\Database\Adapter;
 
 use Craft\Database\Interfaces\AdapterInterface;
 
-class PdoSqliteAdapter implements AdapterInterface{
+/**
+ * #### PDO SQLite Database Adapter using pdo_sqlite extension
+ */
+class PdoSqliteAdapter implements AdapterInterface
+{
 	protected $pdo;
 
+	/**
+	 * Get connection
+	 */
 	public function connect(array $config)
 	{
+		if (!extension_loaded('pdo_sqlite')) {
+			throw new \Exception('PDO SQLite extension is not loaded.');
+		}
 		$dsn = 'sqlite:' . ($config['database'] ?? ':memory:');
 		$this->pdo = new \PDO($dsn);
 		$this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
@@ -25,30 +35,34 @@ class PdoSqliteAdapter implements AdapterInterface{
 		return $stmt;
 	}
 
-    public function fetch($result, $type = 'assoc')
-    {
-        switch ($type) {
-            case 'num': return $result->fetch(\PDO::FETCH_NUM);
-            case 'both': return $result->fetch(\PDO::FETCH_BOTH);
-            case 'object': return $result->fetch(\PDO::FETCH_OBJ);
-            case 'assoc':
-            default: return $result->fetch(\PDO::FETCH_ASSOC);
-        }
-    }
+	public function fetch($result, $type = 'assoc')
+	{
+		switch ($type) {
+			case 'num':
+				return $result->fetch(\PDO::FETCH_NUM);
+			case 'both':
+				return $result->fetch(\PDO::FETCH_BOTH);
+			case 'object':
+				return $result->fetch(\PDO::FETCH_OBJ);
+			case 'assoc':
+			default:
+				return $result->fetch(\PDO::FETCH_ASSOC);
+		}
+	}
 
-    public function fetchAll($result, $type = 'assoc')
-    {
-        $data = [];
-        while ($row = $this->fetch($result, $type)) {
-            $data[] = $row;
-        }
-        return $data;
-    }
+	public function fetchAll($result, $type = 'assoc')
+	{
+		$data = [];
+		while ($row = $this->fetch($result, $type)) {
+			$data[] = $row;
+		}
+		return $data;
+	}
 
-    public function getError()
-    {
-        return $this->pdo ? $this->pdo->errorInfo() : null;
-    }
+	public function getError()
+	{
+		return $this->pdo ? $this->pdo->errorInfo() : null;
+	}
 
 	public function lastInsertId()
 	{

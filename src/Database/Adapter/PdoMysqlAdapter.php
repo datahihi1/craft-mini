@@ -3,10 +3,16 @@ namespace Craft\Database\Adapter;
 
 use Craft\Database\Interfaces\AdapterInterface;
 
+/**
+ * #### PDO MySQL Database Adapter using pdo_mysql extension
+ */
 class PdoMysqlAdapter implements AdapterInterface
 {
     protected $pdo;
 
+    /**
+     * Get connection
+     */
     public function connect(array $config)
     {
         $dsn = 'mysql:host=' . ($config['host'] ?? 'localhost') . ';dbname=' . ($config['database'] ?? '') . ';port=' . ($config['port'] ?? 3306);
@@ -29,11 +35,15 @@ class PdoMysqlAdapter implements AdapterInterface
     public function fetch($result, $type = 'assoc')
     {
         switch ($type) {
-            case 'num': return $result->fetch(\PDO::FETCH_NUM);
-            case 'both': return $result->fetch(\PDO::FETCH_BOTH);
-            case 'object': return $result->fetch(\PDO::FETCH_OBJ);
+            case 'num':
+                return $result->fetch(\PDO::FETCH_NUM);
+            case 'both':
+                return $result->fetch(\PDO::FETCH_BOTH);
+            case 'object':
+                return $result->fetch(\PDO::FETCH_OBJ);
             case 'assoc':
-            default: return $result->fetch(\PDO::FETCH_ASSOC);
+            default:
+                return $result->fetch(\PDO::FETCH_ASSOC);
         }
     }
 

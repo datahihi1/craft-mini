@@ -2,7 +2,7 @@
 namespace Craft\Reports;
 
 /**
- * ErrorReporting class for handling PHP errors and rendering error pages.
+ * #### ErrorReporting class for handling PHP errors and rendering error pages.
  *
  * This class provides functionality to log errors, render error pages, and handle PHP errors gracefully.
  */

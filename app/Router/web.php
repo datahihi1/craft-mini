@@ -11,14 +11,14 @@ $router->get('/', [App\Controller\HomeController::class, 'index']);
 
 $router->get('/test', [HomeController::class, 'test']);
 
+$router->get('/hello/{name}', function ($name) : string {
+    return "Hello, " . htmlspecialchars($name);
+});
+
 // API routes for Users CRUD (query builder)
 Craft\Application\Router::apiGet('/users', [HomeController::class, 'usersIndex']);
 Craft\Application\Router::apiPost('/users', [HomeController::class, 'usersStore']);
 Craft\Application\Router::apiPut('/users/{id}', [HomeController::class, 'usersUpdate']);
 Craft\Application\Router::apiDelete('/users/{id}', [HomeController::class, 'usersDestroy']);
 
-try {
-    $router->runInstance();
-} catch (Exception $e) {
-    die($e->getMessage());
-}
+$router->runInstance();

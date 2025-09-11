@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Model\Users;
+use Craft\Application\Hash as Hash;
 use Craft\Application\Session;
 
 class HomeController extends Controller
@@ -12,17 +13,30 @@ class HomeController extends Controller
         $this->users = new Users();
     }
 
-    public function getAdapter()
-    {
-        return $this->users->getAdapter();
-    }
-
     public function index()
     {
+        dump(session(), getBaseUrl());
         $random = rand(1000, 9999);
-        Session::flash('message', 'Chào mừng bạn đến với trang chủ! Mã: ' . $random);
-        $message = Session::getFlash('message');
-        return $this->render('home', ['message' => $message]);
+        flash('message', 'Chào mừng bạn đến với trang chủ! Mã: ' . $random);
+        $message = getFlash('message');
+        $testHash = Hash::default("password123");
+        $testHash2 = Hash::bcrypt("password123", ['cost' => 12]);
+        $testHash3 = Hash::argon2i("password123", [
+            'memory_cost' => 1<<17,
+            'time_cost'   => 4,
+            'threads'     => 2,
+        ]);
+        $testVerify = Hash::verify("password123", $testHash);
+        return $this->render(
+            'home',
+            [
+                'message' => $message,
+                'testHash' => $testHash,
+                'testHash2' => $testHash2,
+                'testHash3' => $testHash3,
+                'testVerify' => $testVerify
+            ]
+        );
     }
 
     public function test()
@@ -78,21 +92,24 @@ class HomeController extends Controller
         }
 
         $data = [];
-        if (isset($input['name'])) $data['name'] = $input['name'];
-        if (isset($input['email'])) $data['email'] = $input['email'];
-        if (isset($input['password'])) $data['password'] = password_hash($input['password'], PASSWORD_BCRYPT);
+        if (isset($input['name']))
+            $data['name'] = $input['name'];
+        if (isset($input['email']))
+            $data['email'] = $input['email'];
+        if (isset($input['password']))
+            $data['password'] = password_hash($input['password'], PASSWORD_BCRYPT);
 
         if (empty($data)) {
             return ['code' => 422, 'error' => 'No fields to update'];
         }
 
-        $ok = $this->users->where('id', '=', (int)$id)->executeUpdate($data);
-        return ['updated' => (bool)$ok];
+        $ok = $this->users->where('id', '=', (int) $id)->executeUpdate($data);
+        return ['updated' => (bool) $ok];
     }
 
     public function usersDestroy($id)
     {
-        $ok = $this->users->where('id', '=', (int)$id)->executeDelete();
-        return ['deleted' => (bool)$ok];
+        $ok = $this->users->where('id', '=', (int) $id)->executeDelete();
+        return ['deleted' => (bool) $ok];
     }
 }

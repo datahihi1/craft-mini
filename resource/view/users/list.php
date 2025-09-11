@@ -99,7 +99,7 @@
     const inputPassword = document.getElementById('userPassword');
     const togglePasswordBtn = document.getElementById('togglePassword');
 
-    const API_BASE = '/api/users';
+    const API_BASE = '<?= getBaseUrl() ?>api/users';
     let users = [];
 
     function maskPassword() {

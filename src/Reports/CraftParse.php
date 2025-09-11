@@ -2,7 +2,7 @@
 namespace Craft\Reports;
 
 /**
- * ParseReporting class for handling PHP parse analysis and reporting.
+ * #### ParseReporting class for handling PHP parse analysis and reporting.
  *
  * This class captures parse errors, warnings, and other related issues,
  * providing a structured way to log and display them.

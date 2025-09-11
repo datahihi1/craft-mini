@@ -2,10 +2,11 @@
 namespace Craft\Application;
 
 /**
- * Validator class for validating data.
+ * #### Validator class for validating data.
  *
  * This class provides methods to validate various types of data.
  */
+#region Validator
 class Validator
 {
     public static function required($value): bool
@@ -104,3 +105,4 @@ class Validator
     }
 
 }
+#endregion

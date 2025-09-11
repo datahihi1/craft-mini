@@ -2,12 +2,13 @@
 namespace Craft\Application;
 
 /**
- * Session management class
+ * #### Session management class
  *
  * This class provides methods to start, get, set, flash and destroy session variables.
  *
  * It is used to manage user sessions in the application.
  */
+#region Session
 class Session
 {
     /**
@@ -82,3 +83,4 @@ class Session
         session_destroy();
     }
 }
+#endregion

@@ -2,7 +2,7 @@
 namespace Craft\Database\Traits;
 
 /**
- * SoftDelete trait
+ * #### SoftDelete trait
  *
  * This trait provides functionality to mark an object as deleted without actually removing it from the database.
  * 

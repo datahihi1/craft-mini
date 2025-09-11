@@ -2,7 +2,7 @@
 namespace Craft\Application;
 
 /**
- * Request class for handling HTTP requests.
+ * #### Request class for handling HTTP requests.
  *
  * This class encapsulates the request data, including method, URI, query parameters,
  * body parameters, headers, and server information.
