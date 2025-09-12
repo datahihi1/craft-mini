@@ -1,3 +1,0 @@
-2025-09-11 23:59:53 | Exception: PDO SQLite extension is not loaded. | File: C:\laragon\www\CraftMini\src\Database\Adapter\PdoSqliteAdapter.php | Line: 19
-2025-09-12 00:00:54 | Exception: 405 Method Not Allowed: The requested URL / exists but does not support POST method.Allowed: GET | File: C:\laragon\www\CraftMini\src\Application\Router.php | Line: 359
-2025-09-12 00:01:00 | Exception: 405 Method Not Allowed: The requested URL / exists but does not support PATCH method.Allowed: GET | File: C:\laragon\www\CraftMini\src\Application\Router.php | Line: 359

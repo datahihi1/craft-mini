@@ -146,14 +146,6 @@
       <p>Một số tính năng sẽ tạm thời không khả dụng. Vui lòng quay lại sau ít phút nữa. Cảm ơn bạn đã thông cảm!</p>
     </div>
 
-    <div class="details" aria-live="polite">
-      <div class="time">
-        <span><strong>Bắt đầu:</strong> <time datetime="2025-09-04T15:06:17+07:00">15:06:17 04/09/2025 (UTC+7)</time></span>
-        <span><strong>Dự kiến kết thúc:</strong> <time datetime="2025-09-04T18:06:17+07:00">18:06:17 04/09/2025 (UTC+7)</time></span>
-      </div>
-      <!-- Gợi ý: Có thể xóa khối .details nếu không muốn hiển thị thời gian. -->
-    </div>
-
     <footer class="footer">
       <span class="brand" aria-label="Tên hệ thống">YourService</span>
       <span>Liên hệ hỗ trợ: support@example.com</span>
