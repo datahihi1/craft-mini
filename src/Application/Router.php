@@ -68,14 +68,24 @@ class Router
     {
         $this->globalApiMiddleware[] = $middleware;
     }
+    
     // --- STATIC ROUTE METHODS ---
+    /**
+     * Register a GET route.
+     * @param string $path The route path.
+     * @param mixed $handler The route handler (callable or [class, method]).
+     * @param array $middleware Optional middleware for this route.
+     * @return static
+     */
     public static function get(string $path, $handler, array $middleware = [])
     {
         // Kiểm tra xem có đang trong group context không
         if (!empty(self::$groupContext['prefix'])) {
             $fullPath = self::buildGroupPath($path);
             $fullMiddleware = array_merge(self::$groupContext['middleware'], $middleware);
-
+            if (isset(self::$staticRoutes['GET'][$fullPath])) {
+                throw new Exception("Duplicate route detected: GET $fullPath ");
+            }
             self::$staticRoutes['GET'][$fullPath] = ['handler' => $handler, 'middleware' => $fullMiddleware];
             self::$lastRegisteredRoute = ['method' => 'GET', 'path' => $fullPath];
 
@@ -86,19 +96,32 @@ class Router
                 self::$routeNames[$routeName] = ['GET', $fullPath];
             }
         } else {
+            if (isset(self::$staticRoutes['GET'][$path])) {
+                throw new Exception("Duplicate route detected: GET $path ");
+            }
             self::$staticRoutes['GET'][$path] = ['handler' => $handler, 'middleware' => $middleware];
             self::$lastRegisteredRoute = ['method' => 'GET', 'path' => $path];
         }
 
         return new static();
     }
+
+    /**
+     * Register a POST route.
+     * @param string $path The route path.
+     * @param mixed $handler The route handler (callable or [class, method]).
+     * @param array $middleware Optional middleware for this route.
+     * @return static
+     */
     public static function post(string $path, $handler, array $middleware = [])
     {
         // Kiểm tra xem có đang trong group context không
         if (!empty(self::$groupContext['prefix'])) {
             $fullPath = self::buildGroupPath($path);
             $fullMiddleware = array_merge(self::$groupContext['middleware'], $middleware);
-
+            if (isset(self::$staticRoutes['POST'][$fullPath])) {
+                throw new Exception("Duplicate route detected: POST $fullPath ");
+            }
             self::$staticRoutes['POST'][$fullPath] = ['handler' => $handler, 'middleware' => $fullMiddleware];
             self::$lastRegisteredRoute = ['method' => 'POST', 'path' => $fullPath];
 
@@ -109,19 +132,32 @@ class Router
                 self::$routeNames[$routeName] = ['POST', $fullPath];
             }
         } else {
+            if (isset(self::$staticRoutes['POST'][$path])) {
+                throw new Exception("Duplicate route detected: POST $path ");
+            }
             self::$staticRoutes['POST'][$path] = ['handler' => $handler, 'middleware' => $middleware];
             self::$lastRegisteredRoute = ['method' => 'POST', 'path' => $path];
         }
 
         return new static();
     }
+
+    /**
+     * Register a PUT route.
+     * @param string $path The route path.
+     * @param mixed $handler The route handler (callable or [class, method]).
+     * @param array $middleware Optional middleware for this route.
+     * @return static
+     */
     public static function put(string $path, $handler, array $middleware = [])
     {
         // Kiểm tra xem có đang trong group context không
         if (!empty(self::$groupContext['prefix'])) {
             $fullPath = self::buildGroupPath($path);
             $fullMiddleware = array_merge(self::$groupContext['middleware'], $middleware);
-
+            if (isset(self::$staticRoutes['PUT'][$fullPath])) {
+                throw new Exception("Duplicate route detected: PUT $fullPath ");
+            }
             self::$staticRoutes['PUT'][$fullPath] = ['handler' => $handler, 'middleware' => $fullMiddleware];
             self::$lastRegisteredRoute = ['method' => 'PUT', 'path' => $fullPath];
 
@@ -132,19 +168,31 @@ class Router
                 self::$routeNames[$routeName] = ['PUT', $fullPath];
             }
         } else {
+            if (isset(self::$staticRoutes['PUT'][$path])) {
+                throw new Exception("Duplicate route detected: PUT $path ");
+            }
             self::$staticRoutes['PUT'][$path] = ['handler' => $handler, 'middleware' => $middleware];
             self::$lastRegisteredRoute = ['method' => 'PUT', 'path' => $path];
         }
 
         return new static();
     }
+
+    /** Register a DELETE route.
+     * @param string $path The route path.
+     * @param mixed $handler The route handler (callable or [class, method]).
+     * @param array $middleware Optional middleware for this route.
+     * @return static
+     */
     public static function delete(string $path, $handler, array $middleware = [])
     {
         // Kiểm tra xem có đang trong group context không
         if (!empty(self::$groupContext['prefix'])) {
             $fullPath = self::buildGroupPath($path);
             $fullMiddleware = array_merge(self::$groupContext['middleware'], $middleware);
-
+            if (isset(self::$staticRoutes['DELETE'][$fullPath])) {
+                throw new Exception("Duplicate route detected: DELETE $fullPath ");
+            }
             self::$staticRoutes['DELETE'][$fullPath] = ['handler' => $handler, 'middleware' => $fullMiddleware];
             self::$lastRegisteredRoute = ['method' => 'DELETE', 'path' => $fullPath];
 
@@ -155,6 +203,9 @@ class Router
                 self::$routeNames[$routeName] = ['DELETE', $fullPath];
             }
         } else {
+            if (isset(self::$staticRoutes['DELETE'][$path])) {
+                throw new Exception("Duplicate route detected: DELETE $path ");
+            }
             self::$staticRoutes['DELETE'][$path] = ['handler' => $handler, 'middleware' => $middleware];
             self::$lastRegisteredRoute = ['method' => 'DELETE', 'path' => $path];
         }
@@ -163,30 +214,71 @@ class Router
     }
 
     // --- STATIC API ROUTE METHODS ---
+    /**
+     * Register a GET API route.
+     * @param string $path The API route path.
+     * @param mixed $handler The route handler (callable or [class, method]).
+     * @param array $middleware Optional middleware for this route.
+     * @return static
+     */
     public static function apiGet(string $path, $handler, array $middleware = [])
     {
         $path = self::normalizeApiPathStatic($path);
+        if (isset(self::$staticApiRoutes['GET'][$path])) {
+            throw new Exception("Duplicate route detected: GET $path (API)");
+        }
         self::$staticApiRoutes['GET'][$path] = ['handler' => $handler, 'middleware' => $middleware];
         self::$lastRegisteredRoute = ['method' => 'GET', 'path' => $path, 'api' => true];
         return new static();
     }
+
+    /**
+     * Register a POST API route.
+     * @param string $path The API route path.
+     * @param mixed $handler The route handler (callable or [class, method]).
+     * @param array $middleware Optional middleware for this route.
+     * @return static
+     */
     public static function apiPost(string $path, $handler, array $middleware = [])
     {
         $path = self::normalizeApiPathStatic($path);
+        if (isset(self::$staticApiRoutes['POST'][$path])) {
+            throw new Exception("Duplicate route detected: POST $path (API)");
+        }
         self::$staticApiRoutes['POST'][$path] = ['handler' => $handler, 'middleware' => $middleware];
         self::$lastRegisteredRoute = ['method' => 'POST', 'path' => $path, 'api' => true];
         return new static();
     }
+
+    /** Register a PUT API route.
+     * @param string $path The API route path.
+     * @param mixed $handler The route handler (callable or [class, method]).
+     * @param array $middleware Optional middleware for this route.
+     * @return static
+     */
     public static function apiPut(string $path, $handler, array $middleware = [])
     {
         $path = self::normalizeApiPathStatic($path);
+        if (isset(self::$staticApiRoutes['PUT'][$path])) {
+            throw new Exception("Duplicate route detected: PUT $path (API)");
+        }
         self::$staticApiRoutes['PUT'][$path] = ['handler' => $handler, 'middleware' => $middleware];
         self::$lastRegisteredRoute = ['method' => 'PUT', 'path' => $path, 'api' => true];
         return new static();
     }
+
+    /** Register a DELETE API route.
+     * @param string $path The API route path.
+     * @param mixed $handler The route handler (callable or [class, method]).
+     * @param array $middleware Optional middleware for this route.
+     * @return static
+     */
     public static function apiDelete(string $path, $handler, array $middleware = [])
     {
         $path = self::normalizeApiPathStatic($path);
+        if (isset(self::$staticApiRoutes['DELETE'][$path])) {
+            throw new Exception("Duplicate route detected: DELETE $path (API)");
+        }
         self::$staticApiRoutes['DELETE'][$path] = ['handler' => $handler, 'middleware' => $middleware];
         self::$lastRegisteredRoute = ['method' => 'DELETE', 'path' => $path, 'api' => true];
         return new static();
@@ -389,8 +481,8 @@ class Router
         }
 
         http_response_code(404);
-
-        header('HTTP/1.1 404 Not Found');
+        // throw new Exception("404 Not Found: The requested URL " . $uri . " was not found on this server.");
+        // // header('HTTP/1.1 404 Not Found');
     }
     /**
      * Run the route handler.
@@ -575,6 +667,11 @@ class Router
 
         return $url;
     }
+
+    /**
+     * Run tests for all registered routes and output results in an HTML table.
+     * @param string $testValue The value to use for route parameters during testing.
+     */
     public static function runTest($testValue = '1')
     {
         $results = [];
@@ -619,6 +716,7 @@ class Router
             }
         }
         // In kết quả dạng bảng HTML
+        echo '<h1 style="text-align:center;font-family:sans-serif">Route Test Results</h1>';
         echo '<table border="1" cellpadding="6" style="border-collapse:collapse;margin:20px auto;min-width:700px">';
         echo '<thead><tr>
                 <th>Result</th>

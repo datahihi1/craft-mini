@@ -27,7 +27,8 @@ class Controller
      * Render view with data.
      * @param string $view View name to render (directory at: resource/view/)
      * @param array $data Data to pass to the view
-     * @throws Exception
+     * @throws Exception if view file not found
+     * @return void (echoes the rendered view)
      */
     public function render(string $view, array $data = [])
     {

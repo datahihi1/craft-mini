@@ -75,6 +75,32 @@ class Session
     }
 
     /**
+     * Set an error message in the session
+     *
+     * @param string $message The error message.
+     * @return $this
+     */
+    public function withError($message)
+    {
+        self::start();
+        $_SESSION['_error'] = $message;
+        return $this;
+    }
+
+    /**
+     * Set a success message in the session
+     *
+     * @param string $message The success message.
+     * @return $this
+     */
+    public function withSuccess($message)
+    {
+        self::start();
+        $_SESSION['_success'] = $message;
+        return $this;
+    }
+
+    /**
      * Destroy the session
      */
     public static function destroy()

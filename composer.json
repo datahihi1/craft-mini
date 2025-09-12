@@ -14,7 +14,8 @@
         "files": [
             "src/Application/helper/helper.php",
             "src/Application/helper/source.php",
-            "src/Kit/helper/var_dump.php"
+            "src/Application/helper/deprecation.php",
+            "src/Kit/dump/var_dump.php"
         ]
     }
 }

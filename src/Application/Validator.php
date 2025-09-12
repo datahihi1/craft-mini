@@ -34,21 +34,6 @@ class Validator
         return is_numeric($value);
     }
 
-    // public static function unique($value, $param): bool
-    // {
-    //     // $param format: "table,column"
-    //     [$table, $column] = explode(',', $param);
-
-    //     // Use PDO for a simple DB query (assuming $pdo is available globally or via a singleton)
-    //     // You may need to adjust this to fit your DB connection setup
-    //     $pdo = new \PDO('mysql:host=localhost;dbname='.env('DB_NAME'), 'root', '');
-    //     $stmt = $pdo->prepare("SELECT COUNT(*) FROM `$table` WHERE `$column` = :value");
-    //     $stmt->execute(['value' => $value]);
-    //     $count = $stmt->fetchColumn();
-
-    //     return $count == 0;
-    // }
-
     /**
      * Make a validation check on the provided data.
      * @param array $data Data to validate.

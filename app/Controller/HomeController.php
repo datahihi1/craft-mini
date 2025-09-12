@@ -70,7 +70,7 @@ class HomeController extends Controller
             return ['code' => 422, 'error' => 'name, email, password are required'];
         }
 
-        $hashed = password_hash($password, PASSWORD_BCRYPT);
+        $hashed = Hash::bcrypt($password, ['cost' => 12]);
         $id = $this->users->insertGetId([
             'name' => $name,
             'email' => $email,
@@ -97,7 +97,7 @@ class HomeController extends Controller
         if (isset($input['email']))
             $data['email'] = $input['email'];
         if (isset($input['password']))
-            $data['password'] = password_hash($input['password'], PASSWORD_BCRYPT);
+            $data['password'] = Hash::bcrypt($input['password'], ['cost' => 12]);
 
         if (empty($data)) {
             return ['code' => 422, 'error' => 'No fields to update'];

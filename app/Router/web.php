@@ -14,6 +14,13 @@ $router->get('/test', [HomeController::class, 'test']);
 $router->get('/hello/{name}', function ($name) : string {
     return "Hello, " . htmlspecialchars($name);
 });
+// Craft Router will report an error if we define the same route again. So we can test it with a different method.
+// $router->get('/hello/{name}', function ($name) : string {
+//     return "Hello, " . htmlspecialchars($name);
+// });
+$router->apiGet('/hello/{name}', function ($name) : string {
+    return "Hello, " . htmlspecialchars($name);
+});
 
 // API routes for Users CRUD (query builder)
 Craft\Application\Router::apiGet('/users', [HomeController::class, 'usersIndex']);

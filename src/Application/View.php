@@ -131,54 +131,5 @@ class View
         }
         exit();
     }
-
-    /**
-     * Flash a key-value pair to session for the next request.
-     * @param string $key
-     * @param mixed $value
-     */
-    public static function with($key, $value)
-    {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        $_SESSION['flash'][$key] = $value;
-    }
-
-    /**
-     * Flash an error message to session.
-     * @param string $message
-     */
-    public static function withError($message)
-    {
-        self::with('error', $message);
-    }
-
-    /**
-     * Flash a success message to session.
-     * @param string $message
-     */
-    public static function withSuccess($message)
-    {
-        self::with('success', $message);
-    }
-
-    /**
-     * Get and remove a flashed value from session.
-     * @param string $key
-     * @return mixed|null
-     */
-    public static function getFlash($key)
-    {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        if (isset($_SESSION['flash'][$key])) {
-            $value = $_SESSION['flash'][$key];
-            unset($_SESSION['flash'][$key]);
-            return $value;
-        }
-        return null;
-    }
 }
 #endregion
