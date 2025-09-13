@@ -112,6 +112,7 @@ class App
             return;
         }
 
+        // Allow access from localhost
         $serverIps = ['127.0.0.1', '::1'];
         $clientIp = $_SERVER['REMOTE_ADDR'] ?? '';
 
@@ -135,23 +136,23 @@ class App
             $endStr = $endTime ? date('H:i:s d/m/Y', (int) $endTime) : null;
             $countdown = ($endTime && $currentTime < (int) $endTime) ? ((int) $endTime - $currentTime) : null;
 
-            if (file_exists(ROOT_DIR . 'public/maintenance.php')) {
+            if (file_exists(INDEX_DIR . 'maintenance.php')) {
                 echo str_replace(
                     ['{start}', '{end}', '{countdown}'],
                     [$startStr ?? '', $endStr ?? '', $countdown ?? ''],
-                    file_get_contents(ROOT_DIR . 'public/maintenance.php')
+                    file_get_contents(INDEX_DIR . 'maintenance.php')
                 );
             } else {
                 echo '<h1>Maintenance Mode</h1>';
                 if ($startStr)
-                    echo "<p>Bắt đầu: $startStr</p>";
+                    echo "<p>Start: $startStr</p>";
                 if ($endStr) {
-                    echo "<p>Kết thúc: $endStr</p>";
+                    echo "<p>End: $endStr</p>";
                     if ($countdown) {
                         $hours = floor($countdown / 3600);
                         $minutes = floor(($countdown % 3600) / 60);
                         $seconds = $countdown % 60;
-                        echo "<p>Còn lại: {$hours}h {$minutes}m {$seconds}s</p>";
+                        echo "<p>Remaining: {$hours}h {$minutes}m {$seconds}s</p>";
                     }
                 }
                 echo '<p>The site is currently under maintenance. Please check back later.</p>';
@@ -254,7 +255,7 @@ class App
 
         // Check required directories
         $requiredDirs = [
-            'logs' => ROOT_DIR . 'public/logs/',
+            'logs' => INDEX_DIR . 'logs/',
             'vendor' => ROOT_DIR . 'vendor/',
             'app' => ROOT_DIR . 'app/'
         ];
@@ -365,7 +366,7 @@ class App
      *
      * @param string|null $logDir The directory where log files will be stored.
      * 
-     * @return void
+     * @return self
      */
     public static function initializeWeb(?string $logDir = null)
     {
@@ -420,6 +421,8 @@ class App
                 throw $e;
             }
         }
+        
+        return new self();
     }
 
     /**

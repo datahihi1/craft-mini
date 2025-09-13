@@ -63,7 +63,7 @@ class Source {
      * @return bool|array
      */
     public static function check($file = '', bool $showInfo = false) {
-        $baseDir = ROOT_DIR . '/public/';
+        $baseDir = INDEX_DIR;
         $relativePath = ltrim(self::url($file), '/');
         $filePath = rtrim($baseDir, '/\\') . DIRECTORY_SEPARATOR . $relativePath;
         if (!file_exists($filePath)) {

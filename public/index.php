@@ -29,8 +29,22 @@ if (!defined('ROOT_DIR')) {
 }
 
 /*
-| Define INDEX_DIR (Optional - Base of entry file)
+| Define INDEX_DIR - Base of entry file (index.php)
+|------------------------------------------------------------------------------------------------
+| This defines the index directory of the application.
+| It checks if the directory exists and is readable.
+| If not, it returns a 500 error.
+|------------------------------------------------------------------------------------------------
 */
+if (!defined('INDEX_DIR')) {
+    $indexDir = __DIR__ . DIRECTORY_SEPARATOR;
+    if (!is_dir($indexDir) || !is_readable($indexDir)) {
+        http_response_code(500);
+        die('Index directory not accessible');
+    }
+    /** Define the index directory constant of CraftLite application */
+    define('INDEX_DIR', $indexDir);
+}
 
 /*
 | Autoloading
@@ -48,18 +62,10 @@ require_once $autoloadFile;
 
 
 /*
-| Initialize the Craft web application
+| Initialize and boot the Craft web application
 |------------------------------------------------------------------------------------------------
 | This sets up the application environment and prepares it for web requests.
+| After initialization, it boots the application to handle incoming requests.
 |------------------------------------------------------------------------------------------------
 */
-App::initializeWeb(ROOT_DIR . '/public/logs/');
-
-/*
-| Boot the Craft web application
-|------------------------------------------------------------------------------------------------
-| This starts the application and handles the request.
-| It returns the response to be sent to the client.
-|------------------------------------------------------------------------------------------------
-*/
-App::bootWeb();
+App::initializeWeb(INDEX_DIR . '/logs/')->bootWeb();

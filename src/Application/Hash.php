@@ -17,8 +17,6 @@ class Hash {
         if (!defined('PASSWORD_ARGON2I')) {
             return false;
         }
-        // Some builds may define the constant but not have the algorithm enabled.
-        // Try a cheap probe in a safe way.
         try {
             $probe = @password_hash('probe', PASSWORD_ARGON2I);
             return $probe !== false;

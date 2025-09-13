@@ -1,3 +1,9 @@
+<?php 
+if(!function_exists('env') || env('MAINTENANCE_MODE') !== 'true'){
+    exit;
+}
+?>
+
 <!doctype html>
 <html lang="vi">
 <head>
