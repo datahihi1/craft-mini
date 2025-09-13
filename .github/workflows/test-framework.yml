@@ -1,0 +1,244 @@
+name: Test CraftMini Framework
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test on ${{ matrix.os }} PHP ${{ matrix.php }}
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        php: ['7.1', '7.4', '8.0', '8.1', '8.2', '8.3']
+        exclude:
+          # Exclude PHP 7.1 on macOS as it's not available
+          - os: macos-latest
+            php: '7.1'
+          # Exclude PHP 7.1 on Windows as it's not available
+          - os: windows-latest
+            php: '7.1'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php }}
+        extensions: json, mysqli, pdo, pdo_mysql, pdo_sqlite, sqlite3
+        coverage: none
+
+    - name: Get Composer Cache Directory
+      id: composer-cache
+      shell: bash
+      run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+    - name: Cache Composer dependencies
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: ${{ runner.os }}-composer-
+
+    - name: Install dependencies
+      run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+    - name: Create test environment file
+      run: |
+        echo "APP_ENVIRONMENT=testing" > .env
+        echo "APP_DEBUG=true" >> .env
+
+    - name: Create logs directory
+      run: mkdir -p public/logs
+
+    - name: Set up test database
+      run: |
+        # Create SQLite database for testing
+        touch public/test_manga_readers.db
+        # Set permissions for database file
+        chmod 666 public/test_manga_readers.db
+
+    - name: Test framework startup
+      run: |
+        # Test that the application can start without errors
+        php -f public/index.php --version 2>/dev/null || echo "Version check not available"
+        
+        # Test basic PHP syntax
+        php -l public/index.php
+        php -l src/Application/App.php
+        php -l app/Controller/HomeController.php
+
+    - name: Test default route with built-in PHP server
+      run: |
+        # Start PHP built-in server in background
+        php -S localhost:8000 -t public/ > server.log 2>&1 &
+        SERVER_PID=$!
+        
+        # Wait for server to start
+        sleep 3
+        
+        # Test the default route
+        if curl -f -s http://localhost:8000/ > response.html; then
+          echo "✅ Default route (/) is accessible"
+          
+          # Check if response contains expected content
+          if grep -q "Xin chào" response.html; then
+            echo "✅ Default route returns expected Vietnamese content"
+          else
+            echo "❌ Default route content mismatch"
+            cat response.html
+            exit 1
+          fi
+          
+          # Check if response contains hash test content
+          if grep -q "Mã hash" response.html; then
+            echo "✅ Hash functionality is working"
+          else
+            echo "❌ Hash functionality not working"
+            cat response.html
+            exit 1
+          fi
+          
+        else
+          echo "❌ Default route (/) is not accessible"
+          echo "Server log:"
+          cat server.log
+          exit 1
+        fi
+        
+        # Clean up
+        kill $SERVER_PID 2>/dev/null || true
+
+    - name: Test API routes
+      run: |
+        # Start PHP built-in server in background
+        php -S localhost:8000 -t public/ > server.log 2>&1 &
+        SERVER_PID=$!
+        
+        # Wait for server to start
+        sleep 3
+        
+        # Test API routes
+        echo "Testing API routes..."
+        
+        # Test users API (GET)
+        if curl -f -s http://localhost:8000/api/users > api_response.json; then
+          echo "✅ API users route is accessible"
+        else
+          echo "❌ API users route failed"
+          cat server.log
+          exit 1
+        fi
+        
+        # Test hello API route
+        if curl -f -s "http://localhost:8000/api/hello/test" | grep -q "Hello, test"; then
+          echo "✅ API hello route is working"
+        else
+          echo "❌ API hello route failed"
+          exit 1
+        fi
+        
+        # Clean up
+        kill $SERVER_PID 2>/dev/null || true
+
+    - name: Test error handling
+      run: |
+        # Test that non-existent routes return proper error
+        php -S localhost:8000 -t public/ > server.log 2>&1 &
+        SERVER_PID=$!
+        sleep 3
+        
+        # Test 404 handling
+        if curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/nonexistent | grep -q "404"; then
+          echo "✅ 404 error handling works"
+        else
+          echo "❌ 404 error handling failed"
+          exit 1
+        fi
+        
+        kill $SERVER_PID 2>/dev/null || true
+
+    - name: Test database connectivity
+      run: |
+        # Test database connection and basic operations
+        php -r "
+        try {
+          \$pdo = new PDO('sqlite:public/test_manga_readers.db');
+          \$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+          
+          // Test creating a table
+          \$pdo->exec('CREATE TABLE IF NOT EXISTS test_users (id INTEGER PRIMARY KEY, name TEXT)');
+          
+          // Test inserting data
+          \$stmt = \$pdo->prepare('INSERT INTO test_users (name) VALUES (?)');
+          \$stmt->execute(['Test User']);
+          
+          // Test selecting data
+          \$stmt = \$pdo->query('SELECT COUNT(*) FROM test_users');
+          \$count = \$stmt->fetchColumn();
+          
+          if (\$count > 0) {
+            echo '✅ Database operations working\n';
+          } else {
+            echo '❌ Database operations failed\n';
+            exit(1);
+          }
+        } catch (Exception \$e) {
+          echo '❌ Database connection failed: ' . \$e->getMessage() . '\n';
+          exit(1);
+        }
+        "
+
+    - name: Test framework components
+      run: |
+        # Test that all core framework files are syntactically correct
+        find src/ -name "*.php" -exec php -l {} \; | grep -v "No syntax errors"
+        find app/ -name "*.php" -exec php -l {} \; | grep -v "No syntax errors"
+
+    - name: Test Composer autoloading
+      run: |
+        # Test that Composer autoloading works
+        php -r "
+        require_once 'vendor/autoload.php';
+        
+        // Test that main classes can be loaded
+        if (class_exists('Craft\\Application\\App')) {
+          echo '✅ App class loaded successfully\n';
+        } else {
+          echo '❌ App class not found\n';
+          exit(1);
+        }
+        
+        if (class_exists('App\\Controller\\HomeController')) {
+          echo '✅ HomeController class loaded successfully\n';
+        } else {
+          echo '❌ HomeController class not found\n';
+          exit(1);
+        }
+        
+        if (class_exists('Craft\\Application\\Router')) {
+          echo '✅ Router class loaded successfully\n';
+        } else {
+          echo '❌ Router class not found\n';
+          exit(1);
+        }
+        "
+
+    - name: Upload test artifacts on failure
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-artifacts-${{ matrix.os }}-php${{ matrix.php }}
+        path: |
+          server.log
+          response.html
+          api_response.json
+          public/logs/*.log
