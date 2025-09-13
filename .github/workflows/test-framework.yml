@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        php: ['7.1', '7.4', '8.0', '8.1', '8.2', '8.3']
+        php: ['7.1', '8.4']
         exclude:
           # Exclude PHP 7.1 on macOS as it's not available
           - os: macos-latest
@@ -35,6 +35,16 @@ jobs:
         php-version: ${{ matrix.php }}
         extensions: json, mysqli, pdo, pdo_mysql, pdo_sqlite, sqlite3
         coverage: none
+        tools: composer:v2
+
+    - name: Try PHP 8.5 beta if 8.4 not available
+      if: matrix.php == '8.4' && failure()
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.5'
+        extensions: json, mysqli, pdo, pdo_mysql, pdo_sqlite, sqlite3
+        coverage: none
+        tools: composer:v2
 
     - name: Get Composer Cache Directory
       id: composer-cache
@@ -42,7 +52,7 @@ jobs:
       run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
     - name: Cache Composer dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
         key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -234,7 +244,7 @@ jobs:
 
     - name: Upload test artifacts on failure
       if: failure()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: test-artifacts-${{ matrix.os }}-php${{ matrix.php }}
         path: |

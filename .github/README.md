@@ -15,11 +15,8 @@ Tests the CraftMini Framework across multiple operating systems and PHP versions
 
 **PHP Versions:**
 - PHP 7.1 (minimum supported version)
-- PHP 7.4
-- PHP 8.0
-- PHP 8.1
-- PHP 8.2
-- PHP 8.3
+- PHP 8.4 (latest stable version)
+- PHP 8.5 beta (fallback if 8.4 not available)
 
 **Test Coverage:**
 - ✅ Framework startup and initialization

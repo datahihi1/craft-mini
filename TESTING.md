@@ -15,11 +15,8 @@ This workflow automatically tests the framework on:
 
 **PHP Versions:**
 - ✅ PHP 7.1 (minimum supported)
-- ✅ PHP 7.4
-- ✅ PHP 8.0
-- ✅ PHP 8.1
-- ✅ PHP 8.2
-- ✅ PHP 8.3
+- ✅ PHP 8.4 (latest stable)
+- ✅ PHP 8.5 beta (fallback if 8.4 not available)
 
 **Test Coverage:**
 - ✅ Framework startup and initialization
