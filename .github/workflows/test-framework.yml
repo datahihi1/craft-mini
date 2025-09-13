@@ -61,13 +61,34 @@ jobs:
     - name: Install dependencies
       run: composer install --no-progress --prefer-dist --optimize-autoloader
 
+    - name: Install curl if not available
+      run: |
+        if ! command -v curl &> /dev/null; then
+          echo "Installing curl..."
+          if command -v apt-get &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y curl
+          elif command -v yum &> /dev/null; then
+            sudo yum install -y curl
+          elif command -v brew &> /dev/null; then
+            brew install curl
+          elif command -v choco &> /dev/null; then
+            choco install curl
+          else
+            echo "Could not install curl automatically"
+          fi
+        else
+          echo "curl is already available"
+        fi
+
     - name: Create test environment file
       run: |
         echo "APP_ENVIRONMENT=testing" > .env
         echo "APP_DEBUG=true" >> .env
 
     - name: Create logs directory
-      run: mkdir -p public/logs
+      shell: bash
+      run: |
+        mkdir -p public/logs
 
     - name: Set up test database
       run: |
@@ -92,35 +113,61 @@ jobs:
         php -S localhost:8000 -t public/ > server.log 2>&1 &
         SERVER_PID=$!
         
-        # Wait for server to start
-        sleep 3
+        # Wait for server to start and check if it's running
+        sleep 5
         
-        # Test the default route
-        if curl -f -s http://localhost:8000/ > response.html; then
-          echo "✅ Default route (/) is accessible"
-          
-          # Check if response contains expected content
-          if grep -q "Xin chào" response.html; then
-            echo "✅ Default route returns expected Vietnamese content"
-          else
-            echo "❌ Default route content mismatch"
-            cat response.html
-            exit 1
-          fi
-          
-          # Check if response contains hash test content
-          if grep -q "Mã hash" response.html; then
-            echo "✅ Hash functionality is working"
-          else
-            echo "❌ Hash functionality not working"
-            cat response.html
-            exit 1
-          fi
-          
-        else
-          echo "❌ Default route (/) is not accessible"
+        # Check if server is running
+        if ! kill -0 $SERVER_PID 2>/dev/null; then
+          echo "❌ PHP server failed to start"
           echo "Server log:"
           cat server.log
+          exit 1
+        fi
+        
+        # Wait a bit more for server to be ready
+        sleep 2
+        
+        # Test the default route with retry logic
+        MAX_RETRIES=3
+        RETRY_COUNT=0
+        
+        while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+          if curl -f -s --connect-timeout 10 --max-time 30 http://localhost:8000/ > response.html 2>/dev/null; then
+            echo "✅ Default route (/) is accessible"
+            break
+          else
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            echo "Attempt $RETRY_COUNT failed, retrying..."
+            sleep 2
+          fi
+        done
+        
+        if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+          echo "❌ Default route (/) is not accessible after $MAX_RETRIES attempts"
+          echo "Server log:"
+          cat server.log
+          echo "Curl error details:"
+          curl -v http://localhost:8000/ 2>&1 || true
+          exit 1
+        fi
+        
+        # Check if response contains expected content
+        if grep -q "Xin chào" response.html; then
+          echo "✅ Default route returns expected Vietnamese content"
+        else
+          echo "❌ Default route content mismatch"
+          echo "Response content:"
+          cat response.html
+          exit 1
+        fi
+        
+        # Check if response contains hash test content
+        if grep -q "Mã hash" response.html; then
+          echo "✅ Hash functionality is working"
+        else
+          echo "❌ Hash functionality not working"
+          echo "Response content:"
+          cat response.html
           exit 1
         fi
         
@@ -134,25 +181,59 @@ jobs:
         SERVER_PID=$!
         
         # Wait for server to start
-        sleep 3
+        sleep 5
         
-        # Test API routes
-        echo "Testing API routes..."
-        
-        # Test users API (GET)
-        if curl -f -s http://localhost:8000/api/users > api_response.json; then
-          echo "✅ API users route is accessible"
-        else
-          echo "❌ API users route failed"
+        # Check if server is running
+        if ! kill -0 $SERVER_PID 2>/dev/null; then
+          echo "❌ PHP server failed to start for API tests"
+          echo "Server log:"
           cat server.log
           exit 1
         fi
         
-        # Test hello API route
-        if curl -f -s "http://localhost:8000/api/hello/test" | grep -q "Hello, test"; then
-          echo "✅ API hello route is working"
-        else
-          echo "❌ API hello route failed"
+        # Wait a bit more for server to be ready
+        sleep 2
+        
+        # Test API routes
+        echo "Testing API routes..."
+        
+        # Test users API (GET) with retry
+        MAX_RETRIES=3
+        RETRY_COUNT=0
+        
+        while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+          if curl -f -s --connect-timeout 10 --max-time 30 http://localhost:8000/api/users > api_response.json 2>/dev/null; then
+            echo "✅ API users route is accessible"
+            break
+          else
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            echo "API users attempt $RETRY_COUNT failed, retrying..."
+            sleep 2
+          fi
+        done
+        
+        if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+          echo "❌ API users route failed after $MAX_RETRIES attempts"
+          echo "Server log:"
+          cat server.log
+          exit 1
+        fi
+        
+        # Test hello API route with retry
+        RETRY_COUNT=0
+        while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+          if curl -f -s --connect-timeout 10 --max-time 30 "http://localhost:8000/api/hello/test" | grep -q "Hello, test" 2>/dev/null; then
+            echo "✅ API hello route is working"
+            break
+          else
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            echo "API hello attempt $RETRY_COUNT failed, retrying..."
+            sleep 2
+          fi
+        done
+        
+        if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+          echo "❌ API hello route failed after $MAX_RETRIES attempts"
           exit 1
         fi
         
@@ -164,13 +245,37 @@ jobs:
         # Test that non-existent routes return proper error
         php -S localhost:8000 -t public/ > server.log 2>&1 &
         SERVER_PID=$!
-        sleep 3
+        sleep 5
         
-        # Test 404 handling
-        if curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/nonexistent | grep -q "404"; then
-          echo "✅ 404 error handling works"
-        else
-          echo "❌ 404 error handling failed"
+        # Check if server is running
+        if ! kill -0 $SERVER_PID 2>/dev/null; then
+          echo "❌ PHP server failed to start for error handling tests"
+          echo "Server log:"
+          cat server.log
+          exit 1
+        fi
+        
+        # Wait a bit more for server to be ready
+        sleep 2
+        
+        # Test 404 handling with retry
+        MAX_RETRIES=3
+        RETRY_COUNT=0
+        
+        while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --connect-timeout 10 --max-time 30 http://localhost:8000/nonexistent 2>/dev/null)
+          if [ "$HTTP_CODE" = "404" ]; then
+            echo "✅ 404 error handling works"
+            break
+          else
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            echo "404 test attempt $RETRY_COUNT failed (got $HTTP_CODE), retrying..."
+            sleep 2
+          fi
+        done
+        
+        if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+          echo "❌ 404 error handling failed after $MAX_RETRIES attempts (got $HTTP_CODE)"
           exit 1
         fi
         
