@@ -18,7 +18,7 @@ trait SoftDelete
     public function softDelete()
     {
         if ($this->isDeleted()) {
-            return false; // Already deleted
+            return false;
         }
         $this->deleted_at = date('Y-m-d H:i:s');
         return $this->save();
@@ -31,7 +31,7 @@ trait SoftDelete
     public function restore($id = null)
     {
         if (!$this->isDeleted()) {
-            return false; // Not deleted, nothing to restore
+            return false;
         }
         $this->deleted_at = null;
         return $this->save();

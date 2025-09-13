@@ -30,7 +30,6 @@ class DatabaseManager
         $design = env('DB_DESIGN', 'mapper');
         $config = $this->getConfig($driver);
 
-        // Chọn adapter theo driver
         switch ($driver) {
             case 'mysqli':
                 $this->adapter = new MysqliAdapter();
@@ -47,7 +46,6 @@ class DatabaseManager
         }
         $this->adapter->connect($config);
 
-        // Chọn lớp thi hành theo thiết kế (mapper hoặc builder)
         if ($design === 'mapper') {
             if (in_array($driver, ['mysqli', 'pdo_mysql'])) {
                 $this->mapperClass = MysqlMapper::class;
@@ -86,6 +84,10 @@ class DatabaseManager
         }
     }
 
+    /**
+     * Get the current database adapter
+     * @return MysqliAdapter|PdoMysqlAdapter|PdoSqliteAdapter|Sqlite3Adapter
+     */
     public function getAdapter()
     {
         return $this->adapter;

@@ -4,6 +4,7 @@ namespace App\Controller;
 use App\Model\Users;
 use Craft\Application\Hash as Hash;
 use Craft\Application\Session;
+use Exception;
 
 class HomeController extends Controller
 {
@@ -41,8 +42,7 @@ class HomeController extends Controller
 
     public function test()
     {
-        $allUsers = $this->users->select()->fetchAll();
-        return $this->render('users.list', ['users' => $allUsers]);
+        return $this->render('users.list');
     }
 
     // --- API: Users CRUD using Query Builder ---
@@ -91,25 +91,62 @@ class HomeController extends Controller
             }
         }
 
-        $data = [];
-        if (isset($input['name']))
-            $data['name'] = $input['name'];
-        if (isset($input['email']))
-            $data['email'] = $input['email'];
-        if (isset($input['password']))
-            $data['password'] = Hash::bcrypt($input['password'], ['cost' => 12]);
-
-        if (empty($data)) {
-            return ['code' => 422, 'error' => 'No fields to update'];
+        if (empty($input)) {
+            return ['code' => 422, 'error' => 'No input data provided'];
         }
 
-        $ok = $this->users->where('id', '=', (int) $id)->executeUpdate($data);
-        return ['updated' => (bool) $ok];
+        $existingUser = $this->users->where('id', '=', (int) $id)->first();
+        if (!$existingUser) {
+            return ['code' => 404, 'error' => 'User not found'];
+        }
+
+        $data = [];
+        if (isset($input['name']) && !empty(trim($input['name'])))
+            $data['name'] = trim($input['name']);
+        if (isset($input['email']) && !empty(trim($input['email'])))
+            $data['email'] = trim($input['email']);
+        if (isset($input['password']) && !empty(trim($input['password'])))
+            $data['password'] = Hash::bcrypt(trim($input['password']), ['cost' => 12]);
+
+        if (empty($data)) {
+            return ['code' => 422, 'error' => 'No valid fields to update'];
+        }
+
+        try {
+            error_log("Updating user ID: $id with data: " . json_encode($data));
+            
+            $ok = $this->users->where('id', '=', (int) $id)->executeUpdate($data);
+            
+            error_log("Update result: " . ($ok ? 'success' : 'failed'));
+            
+            if ($ok) {
+                return ['code' => 200, 'updated' => true, 'message' => 'User updated successfully'];
+            } else {
+                return ['code' => 500, 'error' => 'Update operation failed - no rows affected'];
+            }
+        } catch (Exception $e) {
+            error_log("Update error: " . $e->getMessage());
+            return ['code' => 500, 'error' => 'Database error: ' . $e->getMessage()];
+        }
     }
 
     public function usersDestroy($id)
     {
-        $ok = $this->users->where('id', '=', (int) $id)->executeDelete();
-        return ['deleted' => (bool) $ok];
+        $existingUser = $this->users->where('id', '=', (int) $id)->first();
+        if (!$existingUser) {
+            return ['code' => 404, 'error' => 'User not found'];
+        }
+
+        try {
+            $ok = $this->users->where('id', '=', (int) $id)->executeDelete();
+            
+            if ($ok) {
+                return ['code' => 200, 'deleted' => true, 'message' => 'User deleted successfully'];
+            } else {
+                return ['code' => 500, 'error' => 'Delete operation failed'];
+            }
+        } catch (Exception $e) {
+            return ['code' => 500, 'error' => 'Database error: ' . $e->getMessage()];
+        }
     }
 }

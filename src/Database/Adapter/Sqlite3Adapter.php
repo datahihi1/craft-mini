@@ -30,7 +30,7 @@ class Sqlite3Adapter implements AdapterInterface
 
 	public function query($sql, $params = [])
 	{
-		// Đơn giản hóa, chưa bind param
+		// Mush simpler, no param binding
 		return $this->conn->query($sql);
 	}
 

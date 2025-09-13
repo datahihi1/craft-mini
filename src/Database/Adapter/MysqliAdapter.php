@@ -48,7 +48,6 @@ class MysqliAdapter implements AdapterInterface
 			throw new \Exception('MySQLi prepare error: ' . $this->conn->error . ' | SQL: ' . $sql);
 		}
 
-		// Suy luận kiểu tham số đơn giản (i,d,s,b)
 		$types = '';
 		$values = [];
 		foreach ($params as $param) {
@@ -65,7 +64,6 @@ class MysqliAdapter implements AdapterInterface
 			$values[] = $param;
 		}
 
-		// bind_param yêu cầu tham chiếu
 		$stmt->bind_param($types, ...$values);
 		if (!$stmt->execute()) {
 			$error = $stmt->error ?: $this->conn->error;
@@ -73,7 +71,6 @@ class MysqliAdapter implements AdapterInterface
 		}
 
 		$result = $stmt->get_result();
-		// Với các lệnh không trả result set (INSERT/UPDATE/DELETE), trả về true
 		return $result ?: true;
 	}
 

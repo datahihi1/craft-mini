@@ -10,4 +10,11 @@ interface BuilderInterface {
     public function delete(): string;
     public function toSql(): string;
     public function getBindings(): array;
+    public function fetchAll(): array;
+    public function fetch(string $type = 'assoc');
+    public function first(string $type = 'assoc');
+    public function get(): array;
+    public function insertGetId(array $data);
+    public function executeUpdate(array $data);
+    public function executeDelete();
 }

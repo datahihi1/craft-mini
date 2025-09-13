@@ -89,15 +89,75 @@
 
   <script>
     // References
-    const tbody = document.getElementById('usersTableBody');
-    const userModal = new bootstrap.Modal(document.getElementById('userModal'));
-    const userForm = document.getElementById('userForm');
-    const userModalLabel = document.getElementById('userModalLabel');
-    const inputId = document.getElementById('userId');
-    const inputName = document.getElementById('userName');
-    const inputEmail = document.getElementById('userEmail');
-    const inputPassword = document.getElementById('userPassword');
-    const togglePasswordBtn = document.getElementById('togglePassword');
+    let tbody, userModalElement, userModal, userForm, userModalLabel;
+    let inputId, inputName, inputEmail, inputPassword, togglePasswordBtn;
+    
+    // Initialize after DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      tbody = document.getElementById('usersTableBody');
+      userModalElement = document.getElementById('userModal');
+      userModal = new bootstrap.Modal(userModalElement);
+      userForm = document.getElementById('userForm');
+      userModalLabel = document.getElementById('userModalLabel');
+      inputId = document.getElementById('userId');
+      inputName = document.getElementById('userName');
+      inputEmail = document.getElementById('userEmail');
+      inputPassword = document.getElementById('userPassword');
+      togglePasswordBtn = document.getElementById('togglePassword');
+      
+      console.log('Modal element:', userModalElement);
+      console.log('Modal instance:', userModal);
+      
+      // Load users after DOM is ready
+      loadUsers();
+      
+      // Add event listeners
+      document.getElementById('btnAdd').addEventListener('click', () => {
+        userModalLabel.textContent = 'Thêm người dùng';
+        inputId.value = '';
+        userForm.classList.remove('was-validated');
+        inputName.value = '';
+        inputEmail.value = '';
+        inputPassword.value = '';
+      });
+
+      togglePasswordBtn.addEventListener('click', () => {
+        if (inputPassword.type === 'password') {
+          inputPassword.type = 'text';
+          togglePasswordBtn.textContent = 'Ẩn';
+        } else {
+          inputPassword.type = 'password';
+          togglePasswordBtn.textContent = 'Hiện';
+        }
+      });
+
+      userForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        userForm.classList.add('was-validated');
+        if (!userForm.checkValidity()) return;
+
+        const id = inputId.value ? Number(inputId.value) : null;
+        const payload = {
+          name: inputName.value.trim(),
+          email: inputEmail.value.trim(),
+          password: inputPassword.value
+        };
+
+        if (id) {
+          if (!payload.password) delete payload.password; // keep existing if empty
+          await updateUser(id, payload);
+        } else {
+          if (!payload.password) {
+            alert('Vui lòng nhập mật khẩu khi tạo người dùng mới.');
+            return;
+          }
+          await addUser(payload);
+        }
+
+        userModal.hide();
+      });
+    });
 
     const API_BASE = '<?= getBaseUrl() ?>api/users';
     let users = [];
@@ -107,8 +167,16 @@
     }
 
     function renderUsers() {
+      console.log('Rendering users:', users);
       tbody.innerHTML = '';
-      users.forEach(u => {
+      
+      if (users.length === 0) {
+        console.log('No users to render');
+        return;
+      }
+      
+      users.forEach((u, index) => {
+        console.log(`Rendering user ${index + 1}:`, u);
         const tr = document.createElement('tr');
 
         const tdId = document.createElement('td');
@@ -139,22 +207,37 @@
         tbody.appendChild(tr);
       });
 
+      // Gắn event listener cho nút sửa và xóa
       tbody.querySelectorAll('.btn-edit').forEach(btn => {
-        btn.addEventListener('click', e => openEditModal(Number(e.currentTarget.dataset.id)));
+        btn.addEventListener('click', e => {
+          e.preventDefault();
+          const id = e.currentTarget.dataset.id;
+          console.log('Edit button clicked for user ID:', id, 'Type:', typeof id);
+          openEditModal(id);
+        });
       });
       tbody.querySelectorAll('.btn-delete').forEach(btn => {
-        btn.addEventListener('click', e => deleteUser(Number(e.currentTarget.dataset.id)));
+        btn.addEventListener('click', e => {
+          e.preventDefault();
+          const id = e.currentTarget.dataset.id;
+          console.log('Delete button clicked for user ID:', id, 'Type:', typeof id);
+          deleteUser(id);
+        });
       });
     }
 
     async function loadUsers() {
       try {
+        console.log('Loading users from:', API_BASE);
         const res = await fetch(API_BASE, { headers: { 'Accept': 'application/json' } });
+        console.log('Response status:', res.status);
         const json = await res.json();
+        console.log('Response data:', json);
         users = Array.isArray(json.data) ? json.data : [];
+        console.log('Users loaded:', users);
         renderUsers();
       } catch (e) {
-        console.error(e);
+        console.error('Error loading users:', e);
         alert('Không tải được danh sách người dùng.');
       }
     }
@@ -167,11 +250,18 @@
           body: JSON.stringify(data)
         });
         const json = await res.json();
-        if (!res.ok || json.error) {
-          alert(json.error || 'Tạo người dùng thất bại');
+        
+        if (json.code === 422) {
+          alert(json.error || 'Dữ liệu không hợp lệ');
           return;
         }
-        await loadUsers();
+        
+        if (json.code === 201) {
+          await loadUsers();
+          return;
+        }
+        
+        alert('Tạo người dùng thất bại');
       } catch (e) {
         console.error(e);
         alert('Tạo người dùng thất bại');
@@ -180,18 +270,38 @@
 
     async function updateUser(id, data) {
       try {
+        console.log('Updating user with ID:', id, 'Type:', typeof id);
         const res = await fetch(`${API_BASE}/${id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
           body: JSON.stringify(data)
         });
         const json = await res.json();
-        if (!res.ok || json.error) {
-          alert(json.error || 'Cập nhật thất bại');
+        console.log('Update response:', json);
+        
+        if (json.code === 404) {
+          alert('Không tìm thấy người dùng: ' + (json.error || ''));
           return false;
         }
-        await loadUsers();
-        return true;
+        
+        if (json.code === 422) {
+          alert('Dữ liệu không hợp lệ: ' + (json.error || ''));
+          return false;
+        }
+        
+        if (json.code === 500) {
+          alert('Lỗi server: ' + (json.error || ''));
+          return false;
+        }
+        
+        if (json.code === 200 && json.updated) {
+          alert('Cập nhật thành công!');
+          await loadUsers();
+          return true;
+        }
+        
+        alert('Cập nhật thất bại: ' + (json.error || 'Không xác định được nguyên nhân'));
+        return false;
       } catch (e) {
         console.error(e);
         alert('Cập nhật thất bại');
@@ -202,16 +312,31 @@
     async function deleteUser(id) {
       if (!confirm('Bạn có chắc muốn xóa user này?')) return;
       try {
+        console.log('Deleting user with ID:', id, 'Type:', typeof id);
         const res = await fetch(`${API_BASE}/${id}`, {
           method: 'DELETE',
           headers: { 'Accept': 'application/json' }
         });
         const json = await res.json();
-        if (!res.ok || json.error) {
-          alert(json.error || 'Xóa thất bại');
+        console.log('Delete response:', json);
+        
+        if (json.code === 404) {
+          alert('Không tìm thấy người dùng: ' + (json.error || ''));
           return;
         }
-        await loadUsers();
+        
+        if (json.code === 200 && json.deleted) {
+          alert('Xóa thành công!');
+          await loadUsers();
+          return;
+        }
+        
+        if (json.code === 500) {
+          alert('Lỗi server: ' + (json.error || ''));
+          return;
+        }
+        
+        alert('Xóa thất bại: ' + (json.error || 'Không xác định được nguyên nhân'));
       } catch (e) {
         console.error(e);
         alert('Xóa thất bại');
@@ -219,65 +344,31 @@
     }
 
     function openEditModal(id) {
-      const user = users.find(u => u.id === id);
-      if (!user) return;
+      console.log('openEditModal called with ID:', id, 'Type:', typeof id);
+      console.log('Available users:', users);
+      
+      // Convert both to numbers for comparison
+      const userId = Number(id);
+      const user = users.find(u => Number(u.id) === userId);
+      if (!user) {
+        console.error('User not found with ID:', id);
+        console.error('Available user IDs:', users.map(u => u.id + ' (' + typeof u.id + ')'));
+        alert('Không tìm thấy người dùng với ID: ' + id);
+        return;
+      }
+      
+      console.log('Found user:', user);
+      
       userModalLabel.textContent = 'Sửa người dùng';
       inputId.value = user.id;
       userForm.classList.remove('was-validated');
       inputName.value = user.name;
       inputEmail.value = user.email;
       inputPassword.value = '';
+      
       userModal.show();
     }
 
-    document.getElementById('btnAdd').addEventListener('click', () => {
-      userModalLabel.textContent = 'Thêm người dùng';
-      inputId.value = '';
-      userForm.classList.remove('was-validated');
-      inputName.value = '';
-      inputEmail.value = '';
-      inputPassword.value = '';
-    });
-
-    togglePasswordBtn.addEventListener('click', () => {
-      if (inputPassword.type === 'password') {
-        inputPassword.type = 'text';
-        togglePasswordBtn.textContent = 'Ẩn';
-      } else {
-        inputPassword.type = 'password';
-        togglePasswordBtn.textContent = 'Hiện';
-      }
-    });
-
-    userForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      userForm.classList.add('was-validated');
-      if (!userForm.checkValidity()) return;
-
-      const id = inputId.value ? Number(inputId.value) : null;
-      const payload = {
-        name: inputName.value.trim(),
-        email: inputEmail.value.trim(),
-        password: inputPassword.value
-      };
-
-      if (id) {
-        if (!payload.password) delete payload.password; // keep existing if empty
-        await updateUser(id, payload);
-      } else {
-        if (!payload.password) {
-          alert('Vui lòng nhập mật khẩu khi tạo người dùng mới.');
-          return;
-        }
-        await addUser(payload);
-      }
-
-      userModal.hide();
-    });
-
-    // Initial load
-    loadUsers();
   </script>
 </body>
 </html>

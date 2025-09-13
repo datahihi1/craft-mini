@@ -1,8 +1,0 @@
-2025-09-11 23:41:32 | Error [2]: SQLite3::query(): Unable to prepare statement: 1, no such table: users | File: C:\laragon\www\CraftMini\src\Database\Adapter\Sqlite3Adapter.php | Line: 34
-2025-09-11 23:43:29 | Error [2]: SQLite3::query(): Unable to prepare statement: 1, table users has no column named password | File: C:\laragon\www\CraftMini\src\Database\Adapter\Sqlite3Adapter.php | Line: 34
-2025-09-11 23:46:12 | Error [2]: SQLite3::query(): Unable to execute statement: NOT NULL constraint failed: users.name | File: C:\laragon\www\CraftMini\src\Database\Adapter\Sqlite3Adapter.php | Line: 34
-2025-09-11 23:48:45 | Error [2]: SQLite3::query(): Unable to execute statement: NOT NULL constraint failed: users.name | File: C:\laragon\www\CraftMini\src\Database\Adapter\Sqlite3Adapter.php | Line: 34
-2025-09-11 23:52:20 | Error [2]: SQLite3::query(): Unable to prepare statement: 1, duplicate column name: password | File: C:\laragon\www\CraftMini\src\Database\Adapter\Sqlite3Adapter.php | Line: 34
-2025-09-11 23:54:17 | Error [2]: SQLite3::query(): Unable to prepare statement: 1, duplicate column name: password | File: C:\laragon\www\CraftMini\src\Database\Adapter\Sqlite3Adapter.php | Line: 34
-2025-09-11 23:55:56 | Error [2]: SQLite3::query(): Unable to execute statement: NOT NULL constraint failed: users.name | File: C:\laragon\www\CraftMini\src\Database\Adapter\Sqlite3Adapter.php | Line: 34
-2025-09-11 23:59:23 | Error [2]: SQLite3::query(): Unable to execute statement: NOT NULL constraint failed: users.name | File: C:\laragon\www\CraftMini\src\Database\Adapter\Sqlite3Adapter.php | Line: 34

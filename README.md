@@ -57,6 +57,7 @@ echo Craft\Application\Session::getFlash('msg'); // Get and clear flash message
 ## System Requirements
 - PHP >= 7.1
 - ext-json (For API routes)
+- [TinyEnv](https://github.com/datahihi1/tiny-env.git)
 - [Composer](https://getcomposer.org/)
 ## Installation
 

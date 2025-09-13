@@ -36,10 +36,8 @@ abstract class BaseBuilder implements BuilderInterface {
         return $this->bindings;
     }
 
-    // insert/update/delete/toSql sẽ được cài ở từng builder con
-
     /**
-     * Thực thi câu lệnh hiện tại và trả về toàn bộ bản ghi
+     * Execute the current statement and return all records
      */
     public function fetchAll(): array
     {
@@ -50,7 +48,7 @@ abstract class BaseBuilder implements BuilderInterface {
     }
 
     /**
-     * Thực thi và trả về một bản ghi
+     * fetch() alias for convenience
      */
     public function fetch(string $type = 'assoc')
     {
@@ -61,7 +59,7 @@ abstract class BaseBuilder implements BuilderInterface {
     }
 
     /**
-     * Alias của fetch() nhưng tiện dụng hơn
+     * fetch() alias for convenience getting the first record only
      */
     public function first(string $type = 'assoc')
     {
@@ -70,7 +68,7 @@ abstract class BaseBuilder implements BuilderInterface {
     }
 
     /**
-     * Alias của fetchAll()
+     * fetchAll alias
      */
     public function get(): array
     {
@@ -78,7 +76,7 @@ abstract class BaseBuilder implements BuilderInterface {
     }
 
     /**
-     * Thực thi INSERT và trả về ID vừa tạo (nếu hỗ trợ)
+     * Execute INSERT and return the created ID (if supported)
      */
     public function insertGetId(array $data)
     {
@@ -92,7 +90,7 @@ abstract class BaseBuilder implements BuilderInterface {
     }
 
     /**
-     * Thực thi UPDATE, trả về true nếu thành công
+     * Execute UPDATE, return true if successful
      */
     public function executeUpdate(array $data)
     {
